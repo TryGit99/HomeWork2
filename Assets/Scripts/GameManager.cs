@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager instance;
     string gameVersion = "1";
+
     void Awake()
     {
         if (instance != null)
@@ -50,7 +51,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
     public override void OnJoinedRoom()
     {
-        Debug.Log("Joined room!!");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log("Created room!!");
+            PhotonNetwork.LoadLevel("GameScene");
+        }
+        else
+        {
+            Debug.Log("Joined room!!");
+        }
     }
-
 }
