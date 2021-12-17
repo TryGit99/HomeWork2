@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// §ì¨ú­«¥ÍÂI
+    /// §Eú­«¥ÍÂI
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>

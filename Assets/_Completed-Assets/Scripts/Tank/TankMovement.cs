@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Tanks;
+using UnityEngine;
 
 namespace Complete
 {
@@ -20,9 +21,19 @@ namespace Complete
         private float m_OriginalPitch;              // The pitch of the audio source at the start of the scene.
         private ParticleSystem[] m_particleSystems; // References to all the particles systems used by the Tanks
 
+        private GameObject tankTurret;
+        private GameObject fireTransform;
+        private Canvas canvas;
+        private string tankTurretTurnName;
+        private float tankTurretTurnValue;
+
         private void Awake ()
         {
             m_Rigidbody = GetComponent<Rigidbody> ();
+
+            tankTurret = transform.FindAnyChild<Transform>("TankTurret").gameObject;
+            fireTransform = transform.FindAnyChild<Transform>("FireTransform").gameObject;
+            canvas = transform.FindAnyChild<Canvas>("Canvas");
         }
 
 
@@ -34,6 +45,8 @@ namespace Complete
             // Also reset the input values.
             m_MovementInputValue = 0f;
             m_TurnInputValue = 0f;
+
+            tankTurretTurnValue = 0;
 
             // We grab all the Particle systems child of that Tank to be able to Stop/Play them on Deactivate/Activate
             // It is needed because we move the Tank when spawning it, and if the Particle System is playing while we do that
@@ -65,6 +78,8 @@ namespace Complete
             m_MovementAxisName = "Vertical";
             m_TurnAxisName = "Horizontal";
 
+            tankTurretTurnName = "TankTurretTurn";
+
             // Store the original pitch of the audio source.
             m_OriginalPitch = m_MovementAudio.pitch;
         }
@@ -75,6 +90,8 @@ namespace Complete
             // Store the value of both input axes.
             m_MovementInputValue = Input.GetAxis (m_MovementAxisName);
             m_TurnInputValue = Input.GetAxis (m_TurnAxisName);
+
+            tankTurretTurnValue = Input.GetAxis(tankTurretTurnName);
 
             EngineAudio ();
         }
@@ -113,6 +130,7 @@ namespace Complete
             // Adjust the rigidbodies position and orientation in FixedUpdate.
             Move ();
             Turn ();
+            TankTurretTurn();
         }
 
 
@@ -136,6 +154,16 @@ namespace Complete
 
             // Apply this rotation to the rigidbody's rotation.
             m_Rigidbody.MoveRotation (m_Rigidbody.rotation * turnRotation);
+        }
+
+        private void TankTurretTurn()
+        {
+            float turn = tankTurretTurnValue * m_TurnSpeed * Time.deltaTime;
+
+            tankTurret.transform.Rotate(new Vector3(0 ,turn ,0));
+            canvas.transform.Rotate(new Vector3(0, 0, -turn));
+
+            fireTransform.transform.RotateAround(tankTurret.transform.position, Vector3.up, turn);
         }
     }
 }
